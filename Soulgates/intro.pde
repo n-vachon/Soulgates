@@ -1,7 +1,8 @@
 void intro() {
-  fill(255,0,0);
-  rect(0,0,width, height);
-  fill(0,0,0);
+  image(intro, 0,0);
+  //fill(255,0,0);
+  //rect(0,0,width, height);
+  fill(255,255,255);
   textFont(instructFont);
   switch (textdisplay) {
     case 1:

@@ -2,7 +2,7 @@ void hall() {
   image(hallway, 0,0);
   //fill(0,0,255);
   //rect(0,0,width, height);
-  fill(0,0,0);
+  fill(255,255,255);
   textFont(instructFont);
   text("Hall", width/3, height/3, 300, 300);
   switch (textdisplay) {

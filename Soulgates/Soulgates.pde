@@ -20,6 +20,7 @@ AudioPlayer track3;
 PImage up, down, left, right;
 
 //backgrounds
+PImage intro;
 PImage bedroom;
 PImage hallway;
 PImage laseroom;
@@ -65,12 +66,14 @@ void setup() {
   //myPort = new Serial(this, portName, 9600);
   
   //initialize images
-  bedroom = loadImage("room1.png");
-  hallway = loadImage("room2.png");
-  laseroom = loadImage("room3.jpg");
-  wateroom = loadImage("room4.jpg");
-  bossroom = loadImage("room5.jpg");
-  bedroom2 = loadImage("room1.png");
+  intro = loadImage("Bedroom_lightoff.png");
+  bedroom = loadImage("Bedroom_lighton.png");
+  hallway = loadImage("Main_Room.png");
+  laseroom = loadImage("lazer room.png");
+  wateroom = loadImage("Water_beach_room.png");
+  bossroom = loadImage("Bossroom.png");
+  bedroom2 = loadImage("Bedroom_lighton.png");
+  intro.resize(width,height);
   bedroom.resize(width,height);
   hallway.resize(width,height);
   laseroom.resize(width,height);
@@ -80,6 +83,8 @@ void setup() {
 }
 
 void draw() {
+  fill(0,0,0);
+  rect(0,0,width,height);
   //if ( myPort.available() > 0) {  // If data is available,
   //  val = myPort.read();         // read it and store it in val
   //}
@@ -178,13 +183,13 @@ void changescene() {
   } 
   
   //in hall
-  else if (direction == 1 && scene == 2) { // walk out of hall into laser room
+  else if (direction == 1 && scene == 2) { // walk out of hall into water room
     x = width;
-    scene = 3; 
+    scene = 4; 
   } 
-  else if (direction == 3 && scene == 2) { // walk out of hall into water room
+  else if (direction == 3 && scene == 2) { // walk out of hall into laser room
     x = 0;
-    scene = 4;
+    scene = 3;
   } 
   else if (direction == 2 && scene == 2) { //try and open locked door
     if (water && laser && !codeopen) { //if succeeded in water and laser rooms, but not already defeated code, then open code scene
@@ -209,14 +214,14 @@ void changescene() {
   }
   
   // in laser room
-  else if (direction == 3 && scene == 3) { // walk out of laser room into hall
-    x = 0;
+  else if (direction == 1 && scene == 3) { // walk out of laser room into hall
+    x = width;
     scene = 2;
   } 
   
   // in water room
-  else if (direction == 1 && scene == 4) { // walk out of water room into hall
-    x = width;
+  else if (direction == 3 && scene == 4) { // walk out of water room into hall
+    x = 0;
     scene = 2;
   } 
   
