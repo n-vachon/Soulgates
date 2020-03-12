@@ -1,5 +1,6 @@
 #include <Keypad.h>
-
+String incode = "";
+String rigthcode = "1234"; 
 const byte ROWS = 4; //four rows
 const byte COLS = 4; //four columns
 char keys[ROWS][COLS] = {
@@ -19,9 +20,29 @@ void setup(){
 }
   
 void loop(){
+  //// READ KEYPAD ///////
   char key = keypad.getKey();
   
   if (key){
-    Serial.println(key);
+    incode += key;
+    //Serial.println("Key: ");
+    //Serial.println(key);
+    //Serial.println(incode);
+
+  if(incode == "1234") {
+    //if(Serial.available() > 0){
+    //digitalWrite(1, "yes");
+    //}
+    Serial.println("yes");
+    incode = "";
   }
+  else if (incode.length() == 4){
+//    if(Serial.available() > 0){
+//    digitalWrite(1, "no");
+//    }
+    Serial.println(incode);
+    incode = "";
+  }
+}
+  delay(10);
 }

@@ -11,12 +11,13 @@ void setup ()
 void loop ()
 {
   val = digitalRead(buttonpin);// digital interface will be assigned a value of pin 3 to read val
-  if (val == HIGH) // When the sound detection module detects a signal, LED flashes
-  {
-    digitalWrite (Led, HIGH);
-  }
-  else
-  {
-    digitalWrite (Led, LOW);
-  }
+  Serial.println(val);
+//  if (val == HIGH) // When the sound detection module detects a signal, LED flashes
+//  {
+//    digitalWrite (Led, HIGH);
+//  }
+//  else
+//  {
+//    digitalWrite (Led, LOW);
+//  }
 }
