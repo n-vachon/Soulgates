@@ -2,6 +2,7 @@
 
 import ddf.minim.*;
 import processing.serial.*;
+
 Serial arduino;
 Minim minim1;
 Minim minim2;
@@ -9,7 +10,6 @@ Minim minim3;
 AudioPlayer track1;
 AudioPlayer track2;
 AudioPlayer track3;
-//Serial myPort;
 
 //Text box growing and shrinking 
 //boolean grow = false;
@@ -19,7 +19,7 @@ AudioPlayer track3;
 //Charecter Movement Images
 PImage up, down, left, right;
 
-//backgrounds
+//backgrounds images
 PImage intro;
 PImage bedroom;
 PImage hallway;
@@ -31,8 +31,8 @@ PImage ending;
 
 
 //Text, Room, and Direction Checkers
-int textdisplay = 1;
-int scene = 0;
+int textdisplay = 1; //which text to display
+int scene = 0; // which scene to display
 int direction = 0; //1=left, 2=up, 3=right, 4=down
 
 //Speed of movement
@@ -45,8 +45,10 @@ int x,y;
 String currentText = "";
 
 //Success checks
-boolean water = true;
-boolean laser = true;
+boolean flame = false;
+boolean water = false;
+boolean laser = false;
+boolean attempt = false; // to check if code was attempted
 boolean codeopen = false;
 boolean boss = false;
 boolean scream = false;
@@ -54,16 +56,20 @@ boolean scream = false;
 //Font Variables
 PFont instructFont, evilFont, goodFont;
 
+//Aurduino input
+//int incomingByte;
+
 void setup() {
   size(1000,1000);
   x=width/2;
-  y=height/2;
+  y=height*3/4;
   instructFont = createFont("Calibri", 50);
   evilFont = createFont("Calibri", 25);
   goodFont = createFont("Calibri", 70);
+  
   //printArray(Serial.list()); //list serial ports
   //String portName = Serial.list()[1]; // pc
-  //myPort = new Serial(this, portName, 9600);
+  //arduino = new Serial(this, portName, 9600);
   
   //initialize images
   intro = loadImage("Bedroom_lightoff.png");
@@ -83,76 +89,167 @@ void setup() {
 }
 
 void draw() {
+  //Fill entire screen with black  
   fill(0,0,0);
   rect(0,0,width,height);
-  //if ( myPort.available() > 0) {  // If data is available,
-  //  val = myPort.read();         // read it and store it in val
+  
+  //check fo arduino input
+  //if ( arduino.available() > 0) {  // If data is available,
+    //incomingByte = arduino.read();  // read it and store it in incomingByte
   //}
-    //scene sellector
+  
+  //use arduino input to change things
+  //checkArduino(incomingByte); // this function call replaces the keyPressed function
+  println("xpos: "+x);
+  println("ypos: "+y);
+  //scene sellector
   if (scene == 0) { 
     intro(); // describes scenario
   } else if (scene == 1) {
-    //image(bedroom, 500, 500);
     bedroom(); //opens to girls bedroom
     //track2.play();
   } else if (scene == 2) {
-    //image(hallway, 500, 500); 
     hall(); //hallway connecting rooms
   } else if (scene == 3) {
-    //image(laseroom, 500, 500); 
     laser(); //laser room
   } else if (scene == 4) {
-    //image(wateroom, 500, 500); 
     water(); //water room
   } else if (scene == 5) {
     code(); // crack the code scene
   } else if (scene == 6) {
-    //image(bossroom, 500, 500); 
     boss(); // fight the boss demon
   } else if (scene == 7) {
-    //image(bedroom2, 500, 500);
     bedend(); //enter bedroom to wake sister
   } else if (scene == 8) {
-    //image(ending, 500, 500);
     ending(); // result of waking sister
   }
-  println(textdisplay);
+  //println(textdisplay);
+}
+
+void checkArduino(int key) {
+  switch (key) {
+  case 'l':
+      direction = 1;
+      if (scene == 1 && x > 130) {x -= speed;} // max left direction in bedroom (scene 1)
+      else if (scene == 2 && x > 170) {x -= speed;} // max left direction in hall (scene 2)
+      else if (scene == 3 && x > 290) {x -= speed;} // max left direction in laser room (scene 3)
+      else if (scene == 4 && x > 410) {x -= speed;} // max left direction in water room (scene 4)
+      else if (scene == 6 && x > 60) {x -= speed;} // max left direction in boss room (scene 6)
+      changescene(); // check if in door position to change scene
+      break;
+  case 'u':
+      direction = 2;
+      if (scene == 1 && y > 250) {y -= speed;} // max up direction in bedroom (scene 1)
+      else if (scene == 2 && y > 235) {y -= speed;} // max up direction in hall (scene 2)
+      else if ((scene == 3 || scene == 4) && y > 245) {y -= speed;} // max up direction in side rooms (scene 3 & 4)
+      else if (scene == 6 && y > 180) {y -= speed;} // max up direction in boss room (scene 6)
+      changescene(); // check if in door position to change scene
+      break;
+  case 'r':
+      direction = 3;
+      if (scene == 1 && x < 880) {x += speed;} // max right direction in bedroom (scene 1)
+      else if (scene == 2 && x < 830) {x += speed;} // max right direction in hall (scene 2)
+      else if (scene == 3 && x < 680) {x += speed;} // max right direction in laser room (scene 3)
+      else if (scene == 4 && x < 750) {x += speed;} // max right direction in water room (scene 4)
+      else if (scene == 6 && x < 800) {x += speed;} // max right direction in boss room (scene 6)
+      changescene(); // check if in door position to change scene
+      break;
+  case 'd':
+      direction = 4;
+      if (scene == 1 && y < 790) {y += speed;} // max down direction in bedroom (scene 1)
+      else if (scene == 2 && y < 870) {y += speed;} // max down direction in hall (scene 2)
+      else if ((scene == 3 || scene == 4) && y < 800) {y += speed;} // max down direction in side rooms (scene 3 & 4)
+      else if (scene == 6 && y < 870) {y += speed;} // max down direction in boss room (scene 6)
+      changescene(); // check if in door position to change scene
+      break;
+  case 't':
+      textdisplay++; // increase text number to go to next text block
+      break;
+  case 'F':
+      flame = true; // success in flame room
+      break;
+  case 'W':
+      water = true; //success in water room
+      break;
+  case 'L':
+      laser = true; //success in laser room
+      break;
+  case 'C':
+      codeopen = true; // code cracked
+      scene = 6; // go to boss scene
+      break;
+  case 'c':
+      attempt =true; //code was attempted and wrong
+      break;
+  case 'B':
+      boss = true; // success in boss room
+      break;
+  case 'S':
+      scream = true; //success in scream
+  case 'G':
+      // red balloon
+      break;
+  case 'H':
+      // blue balloon
+      break;
+  case 'J':
+      //green balloon
+      break;
+  case 'K':
+      //yellow balloon
+      break;
+  }
 }
 
 void keyPressed() {
   if (key == CODED) { // movement
     if (keyCode == LEFT) {
       direction = 1;
-      if (x >= 10) {x -= speed;} //move left by 5 if not at wall
-      else if (y <=600 && y>=400) {changescene();} // if in door position, check to change scene
+      if (scene == 1 && x > 130) {x -= speed;} // max left direction in bedroom (scene 1)
+      else if (scene == 2 && x > 170) {x -= speed;} // max left direction in hall (scene 2)
+      else if (scene == 3 && x > 290) {x -= speed;} // max left direction in laser room (scene 3)
+      else if (scene == 4 && x > 410) {x -= speed;} // max left direction in water room (scene 4)
+      else if (scene == 6 && x > 60) {x -= speed;} // max left direction in boss room (scene 6)
+      changescene(); // check if in door position to change scene
     }
     if (keyCode == UP) {
       direction = 2;
-      if (y >= 10) {y -= speed;} //move up by 5 if not at wall
-      else if (x <=600 && x>=400) {changescene();} // if in door position, check to change scene
+      if (scene == 1 && y > 250) {y -= speed;} // max up direction in bedroom (scene 1)
+      else if (scene == 2 && y > 235) {y -= speed;} // max up direction in hall (scene 2)
+      else if ((scene == 3 || scene == 4) && y > 245) {y -= speed;} // max up direction in side rooms (scene 3 & 4)
+      else if (scene == 6 && y > 180) {y -= speed;} // max up direction in boss room (scene 6)
+      changescene(); // check if in door position to change scene
     }
     if (keyCode == RIGHT) {
       direction = 3;
-      if (x <= width-10) {x += speed;} //move right by 5 if not at wall
-      else if (y <=600 && y>=400) {changescene();} // if in door position, check to change scene
+      if (scene == 1 && x < 880) {x += speed;} // max right direction in bedroom (scene 1)
+      else if (scene == 2 && x < 830) {x += speed;} // max right direction in hall (scene 2)
+      else if (scene == 3 && x < 680) {x += speed;} // max right direction in laser room (scene 3)
+      else if (scene == 4 && x < 750) {x += speed;} // max right direction in water room (scene 4)
+      else if (scene == 6 && x < 800) {x += speed;} // max right direction in boss room (scene 6)
+      changescene(); // check if in door position to change scene
     }
     if (keyCode == DOWN) {
       direction = 4;
-      if (y <= height-10) {y += speed;} // move down by 5 if not at wall
-      else if (x <=600 && x>=400) {changescene();} // if in door position, check to change scene
+      if (scene == 1 && y < 790) {y += speed;} // max down direction in bedroom (scene 1)
+      else if (scene == 2 && y < 870) {y += speed;} // max down direction in hall (scene 2)
+      else if ((scene == 3 || scene == 4) && y < 800) {y += speed;} // max down direction in side rooms (scene 3 & 4)
+      else if (scene == 6 && y < 870) {y += speed;} // max down direction in boss room (scene 6)
+      changescene(); // check if in door position to change scene
     }
   }
   else {
-    if (key == 'f'||key =='F') {} // success in flame room
-    else if (key == 'w'||key =='W') {} //success in water room
-    else if (key == 'l'||key =='L') {} //success in laser room
-    else if (key == 's'||key == 'S') {} //success in scream
+    if (key == 'f'||key =='F') {flame = true;} // success in flame room
+    else if (key == 'w'||key =='W') {water =true;} //success in water room
+    else if (key == 'l'||key =='L') {laser = true;} //success in laser room
+    else if (key == 's'||key == 'S') {scream = true;} //success in scream
     else if (key == 'z'||key =='Z') {} //balloon red
     else if (key == 'x'||key =='X') {} //balloon blue
     else if (key == 'c'||key =='C') {} //balloon green
     else if (key == 'v'||key =='V') {} //balloon yellow
     else if (key == 'q'||key =='Q') {codeopen =true; scene=6;} // code cracked
     else if (key == 't'||key =='T') {textdisplay++;} // increment text
+    else if (key == 'b'||key =='B') {boss = true;} //success in boss room
     else {} // keep numbers? can arduino check this and send success?
   }
 }
@@ -177,57 +274,89 @@ void drawPerson() {
 
 void changescene() {
   // in bedroom
-  if (direction == 2 && scene == 1) { // walk out of bedroom into hall
-    y = height;
-    scene = 2;
-  } 
+  if (scene == 1) {
+    if (direction == 2) { // UP
+      if (y < 330 && x >= 220 && x <= 240) {
+        y = 860;
+        x = width/2;
+        scene = 2;
+      }
+    }
+  }
   
   //in hall
-  else if (direction == 1 && scene == 2) { // walk out of hall into water room
-    x = width;
-    scene = 4; 
-  } 
-  else if (direction == 3 && scene == 2) { // walk out of hall into laser room
-    x = 0;
-    scene = 3;
-  } 
-  else if (direction == 2 && scene == 2) { //try and open locked door
-    if (water && laser && !codeopen) { //if succeeded in water and laser rooms, but not already defeated code, then open code scene
-      y = height;
-      scene = 5;
-    } 
-    else if (!codeopen) {}// else if not defeated code then say it's locked
-    else { // else go into boss room
-      y = height;
-      scene = 6;
-    } 
+  else if (scene == 2) {
+    if (direction == 1) { // LEFT
+      if (x < 180 && y <= 585 && y >= 565) {
+        x = 760;
+        y = 515;
+        scene = 4; // WATER
+      }
+    }
+    else if (direction == 2) { // UP
+      if (y < 245 && x <= 570 && x >= 400) {
+        if (water && laser && !codeopen) { 
+          //if succeeded in water and laser rooms, but not already defeated code, then open code scene
+          y = height;
+          scene = 5; // CODE
+        } 
+        else if (!codeopen) {
+          //text("It's locked!", width/3, height/3, 300, 300);     
+          // make a function for this
+        }// else if not defeated code then say it's locked
+        else { // else go into boss room
+          y = height;
+          scene = 6; // BOSS
+        } 
+      }
+    }
+    else if (direction == 3) { // RIGHT
+      if (x > 820 && y <= 585 && y >= 565) {
+        x = 300;
+        y = 515;
+        scene = 3; // LASER
+      }
+    }
+    else if (direction == 4) { // DOWN
+      if (y > 860 && x >=460 && x <= 500) {
+        y = 340;
+        x = 230;
+        if (boss) { // if completed boss scene, go to ending bedroom scene 
+          scene = 7; // ENDING
+        } 
+        else { // else go back to original bedroom scene
+          scene = 1; // BEGINNING
+        }
+      }
+    }
   }
-  else if (direction == 4 && scene == 2) { // try to go into bedroom
-    if (boss) { // if completed boss scene, go to ending bedroom scene
-      y = 0;
-      scene = 7;
-    } 
-    else { // else go back to original bedroom scene
-      y = 0;
-      scene = 1;
-    } 
+  
+  else if (scene == 3) { // LASER ROOM
+    if (direction == 1) { // LEFT
+      if (x < 300 && y >= 505 && y <= 525) {
+        x = 820;
+        y = 575;
+        scene = 2; // HALL
+      }
+    }
   }
   
-  // in laser room
-  else if (direction == 1 && scene == 3) { // walk out of laser room into hall
-    x = width;
-    scene = 2;
-  } 
+  else if (scene == 4) { // WATER ROOM
+    if (direction == 3) { // RIGHT
+      if (x > 740 && y >= 505 && y <= 525) {
+        x = 180;
+        y = 575;
+        scene = 2; // HALL
+      }
+    }
+  }
   
-  // in water room
-  else if (direction == 3 && scene == 4) { // walk out of water room into hall
-    x = 0;
-    scene = 2;
-  } 
-  
-  //in boss room
-  else if (direction == 4 && scene == 6) { // walk out of boss room into hall
-    y = 0;
-    scene = 2;
-  } 
+  else if (scene == 6) { // BOSS
+    if (direction == 4) { // DOWN 
+      if (y > 860 && x <= 520 && x >= 480) { 
+        y = 245;
+        scene = 2; // HALL
+      }
+    }
+  }
 }

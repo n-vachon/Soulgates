@@ -25,6 +25,17 @@ const int magnet = 11;
 int hitSensor, hitButton, waterlevel;
 boolean laserOn = false;
 
+//////////////////////////////////////////////////////////////////
+//// code won't compile if this function comes after void loop ////
+//////////////////////////////////////////////////////////////////
+void establishContact() {
+  while (Serial.available() <= 0) {
+    Serial.println("0,0,0");   // send an initial string
+    delay(300);
+  }
+}//////////// THIS CODE IS FROM AN IN CLASS EXAMPLE ///////////////
+
+
 void setup ()
 {
    pinMode (laser, OUTPUT); // define the digital output interface 13 feet
@@ -39,13 +50,13 @@ void setup ()
    Serial.begin(9600);
 }
 void loop () {
-  /*
+  
   /////// READ KEYPAD //////////////
   if(myserial.available() > 0){
     String letter = myserial.readString();
     Serial.println(letter);
   }
-*/
+
 
   ////////// READ BUTTON _ TURN ON LASER _ READ PHOTOCELL ????????????
   hitButton = digitalRead(button);
@@ -65,7 +76,7 @@ void loop () {
     laserOn = false;
    //Serial.println(hitSensor);
    }
-/*
+   
    //////// READ JOYSTICK /////////
   if (x_pin > 800 || y_pin > 800 || x_pin < 300 || y_pin < 300) {
   Serial.println("X-axis: ");
@@ -113,6 +124,6 @@ void loop () {
   if (water_val > 30) {
   Serial.println(water_val);
   }
-*/
+
   //delay(10);
 }
