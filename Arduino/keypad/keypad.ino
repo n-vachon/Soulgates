@@ -1,3 +1,5 @@
+// Source: https://www.instructables.com/id/Connecting-a-4-x-4-Membrane-Keypad-to-an-Arduino/
+
 #include <Keypad.h>
 String incode = "";
 String rigthcode = "1234"; 
@@ -25,23 +27,14 @@ void loop(){
   
   if (key){
     incode += key;
-    //Serial.println("Key: ");
-    //Serial.println(key);
-    //Serial.println(incode);
 
-  if(incode == "1234") {
-    //if(Serial.available() > 0){
-    //digitalWrite(1, "yes");
-    //}
-    Serial.println("yes");
-    incode = "";
+  if(incode == "1234") { // check if right code
+    Serial.println("C"); // For processing, C means success
+    incode = ""; // reset incode
   }
-  else if (incode.length() == 4){
-//    if(Serial.available() > 0){
-//    digitalWrite(1, "no");
-//    }
-    Serial.println(incode);
-    incode = "";
+  else if (incode.length() == 4){ // else if right length
+    Serial.println("c"); // for processing, c means attempt, but not success
+    incode = ""; // reset incode
   }
 }
   delay(10);

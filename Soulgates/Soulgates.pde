@@ -3,18 +3,16 @@
 import ddf.minim.*;
 import processing.serial.*;
 
+// To connect to arduino
 Serial arduino;
+
+// For future audio inputs?
 Minim minim1;
 Minim minim2;
 Minim minim3;
 AudioPlayer track1;
 AudioPlayer track2;
 AudioPlayer track3;
-
-//Text box growing and shrinking 
-//boolean grow = false;
-//int xgrow = 0;
-//boolean text = false;
 
 //Charecter Movement Images
 PImage up, down, left, right;
@@ -45,6 +43,7 @@ int x,y;
 String currentText = "";
 
 //Success checks
+// when arduino sends a specific letter, these booleans will turn true
 boolean flame = false;
 boolean water = false;
 boolean laser = false;
@@ -54,18 +53,19 @@ boolean boss = false;
 boolean scream = false;
 
 //Font Variables
+// different fonts are used for different "voices" used through the text displayed
 PFont instructFont, evilFont, goodFont;
 
 //Aurduino input
 //int incomingByte;
 
 void setup() {
-  size(1000,1000);
-  x=width/2;
+  size(1000,1000); 
+  x=width/2; //starting position
   y=height*3/4;
   instructFont = createFont("Calibri", 50);
-  evilFont = createFont("Calibri", 25);
-  goodFont = createFont("Calibri", 70);
+  evilFont = createFont("Calibri", 25); // to be changed later
+  goodFont = createFont("Calibri", 70); // to be changed later
   
   //printArray(Serial.list()); //list serial ports
   //String portName = Serial.list()[1]; // pc
@@ -74,11 +74,12 @@ void setup() {
   //initialize images
   intro = loadImage("Bedroom_lightoff.png");
   bedroom = loadImage("Bedroom_lighton.png");
-  hallway = loadImage("Main_Room.png");
+  hallway = loadImage("hallway .png");
   laseroom = loadImage("lazer room.png");
   wateroom = loadImage("Water_beach_room.png");
-  bossroom = loadImage("Bossroom.png");
+  bossroom = loadImage("bossroom_new.png");
   bedroom2 = loadImage("Bedroom_lighton.png");
+  // size then up appropriately
   intro.resize(width,height);
   bedroom.resize(width,height);
   hallway.resize(width,height);
@@ -89,7 +90,7 @@ void setup() {
 }
 
 void draw() {
-  //Fill entire screen with black  
+  //Fill entire screen with black to eliminate edges showing 
   fill(0,0,0);
   rect(0,0,width,height);
   
@@ -100,8 +101,7 @@ void draw() {
   
   //use arduino input to change things
   //checkArduino(incomingByte); // this function call replaces the keyPressed function
-  println("xpos: "+x);
-  println("ypos: "+y);
+
   //scene sellector
   if (scene == 0) { 
     intro(); // describes scenario
@@ -126,9 +126,10 @@ void draw() {
   //println(textdisplay);
 }
 
+// This function checks the input recieved from arduino against the letter is represents then does this action
 void checkArduino(int key) {
   switch (key) {
-  case 'l':
+  case 'l': // move left
       direction = 1;
       if (scene == 1 && x > 130) {x -= speed;} // max left direction in bedroom (scene 1)
       else if (scene == 2 && x > 170) {x -= speed;} // max left direction in hall (scene 2)
@@ -137,7 +138,7 @@ void checkArduino(int key) {
       else if (scene == 6 && x > 60) {x -= speed;} // max left direction in boss room (scene 6)
       changescene(); // check if in door position to change scene
       break;
-  case 'u':
+  case 'u': // move up
       direction = 2;
       if (scene == 1 && y > 250) {y -= speed;} // max up direction in bedroom (scene 1)
       else if (scene == 2 && y > 235) {y -= speed;} // max up direction in hall (scene 2)
@@ -145,7 +146,7 @@ void checkArduino(int key) {
       else if (scene == 6 && y > 180) {y -= speed;} // max up direction in boss room (scene 6)
       changescene(); // check if in door position to change scene
       break;
-  case 'r':
+  case 'r': // move right
       direction = 3;
       if (scene == 1 && x < 880) {x += speed;} // max right direction in bedroom (scene 1)
       else if (scene == 2 && x < 830) {x += speed;} // max right direction in hall (scene 2)
@@ -154,7 +155,7 @@ void checkArduino(int key) {
       else if (scene == 6 && x < 800) {x += speed;} // max right direction in boss room (scene 6)
       changescene(); // check if in door position to change scene
       break;
-  case 'd':
+  case 'd': // move down
       direction = 4;
       if (scene == 1 && y < 790) {y += speed;} // max down direction in bedroom (scene 1)
       else if (scene == 2 && y < 870) {y += speed;} // max down direction in hall (scene 2)
@@ -186,6 +187,7 @@ void checkArduino(int key) {
       break;
   case 'S':
       scream = true; //success in scream
+  // rest of the cases are for future balloon simon says
   case 'G':
       // red balloon
       break;
@@ -201,6 +203,7 @@ void checkArduino(int key) {
   }
 }
 
+// functions to test processing without arduino input - replace with keyboard input
 void keyPressed() {
   if (key == CODED) { // movement
     if (keyCode == LEFT) {
@@ -243,14 +246,14 @@ void keyPressed() {
     else if (key == 'w'||key =='W') {water =true;} //success in water room
     else if (key == 'l'||key =='L') {laser = true;} //success in laser room
     else if (key == 's'||key == 'S') {scream = true;} //success in scream
-    else if (key == 'z'||key =='Z') {} //balloon red
-    else if (key == 'x'||key =='X') {} //balloon blue
-    else if (key == 'c'||key =='C') {} //balloon green
-    else if (key == 'v'||key =='V') {} //balloon yellow
-    else if (key == 'q'||key =='Q') {codeopen =true; scene=6;} // code cracked
+    // next 4 are for future simon says balloons
+    else if (key == 'g'||key =='G') {} //balloon red
+    else if (key == 'h'||key =='H') {} //balloon blue
+    else if (key == 'j'||key =='J') {} //balloon green
+    else if (key == 'k'||key =='K') {} //balloon yellow
+    else if (key == 'c'||key =='C') {codeopen =true; scene=6;} // code cracked
     else if (key == 't'||key =='T') {textdisplay++;} // increment text
     else if (key == 'b'||key =='B') {boss = true;} //success in boss room
-    else {} // keep numbers? can arduino check this and send success?
   }
 }
 
@@ -266,20 +269,24 @@ void drawPerson() {
   //  image(down, x, y);
   //}
   ///// END DRAW PERSON ////////
+  
+  // stand in green square for person during testing
   rectMode(CENTER);
   fill(0,255,0);
   rect(x,y,100,100);
   rectMode(CORNER);
 }
 
+// this function checks if in a doorway based on the scene
 void changescene() {
   // in bedroom
-  if (scene == 1) {
+  if (scene == 1) { 
     if (direction == 2) { // UP
-      if (y < 330 && x >= 220 && x <= 240) {
+      if (y < 330 && x >= 220 && x <= 240) { // going through doorway
+      // position in new doorframe
         y = 860;
         x = width/2;
-        scene = 2;
+        scene = 2; // go into hall
       }
     }
   }
@@ -287,18 +294,19 @@ void changescene() {
   //in hall
   else if (scene == 2) {
     if (direction == 1) { // LEFT
-      if (x < 180 && y <= 585 && y >= 565) {
+      if (x < 180 && y <= 585 && y >= 565) { // going through doorway
+      // position in new doorframe
         x = 760;
         y = 515;
-        scene = 4; // WATER
+        scene = 4; // WATER room
       }
     }
     else if (direction == 2) { // UP
-      if (y < 245 && x <= 570 && x >= 400) {
+      if (y < 245 && x <= 570 && x >= 400) { // going through doorway
         if (water && laser && !codeopen) { 
           //if succeeded in water and laser rooms, but not already defeated code, then open code scene
           y = height;
-          scene = 5; // CODE
+          scene = 5; // CODE scene
         } 
         else if (!codeopen) {
           //text("It's locked!", width/3, height/3, 300, 300);     
@@ -306,26 +314,28 @@ void changescene() {
         }// else if not defeated code then say it's locked
         else { // else go into boss room
           y = height;
-          scene = 6; // BOSS
+          scene = 6; // BOSS room
         } 
       }
     }
     else if (direction == 3) { // RIGHT
-      if (x > 820 && y <= 585 && y >= 565) {
+      if (x > 820 && y <= 585 && y >= 565) { // going through doorway
+      // position in new doorframe
         x = 300;
         y = 515;
-        scene = 3; // LASER
+        scene = 3; // LASER room
       }
     }
     else if (direction == 4) { // DOWN
-      if (y > 860 && x >=460 && x <= 500) {
+      if (y > 860 && x >=460 && x <= 500) { // going through doorway
+        // position in new doorframe
         y = 340;
         x = 230;
         if (boss) { // if completed boss scene, go to ending bedroom scene 
-          scene = 7; // ENDING
+          scene = 7; // ENDING scene in bedroom
         } 
         else { // else go back to original bedroom scene
-          scene = 1; // BEGINNING
+          scene = 1; // BEGINNING bedroom scene
         }
       }
     }
@@ -333,7 +343,8 @@ void changescene() {
   
   else if (scene == 3) { // LASER ROOM
     if (direction == 1) { // LEFT
-      if (x < 300 && y >= 505 && y <= 525) {
+      if (x < 300 && y >= 505 && y <= 525) { // going through doorway
+      // position in new doorframe
         x = 820;
         y = 575;
         scene = 2; // HALL
@@ -343,7 +354,8 @@ void changescene() {
   
   else if (scene == 4) { // WATER ROOM
     if (direction == 3) { // RIGHT
-      if (x > 740 && y >= 505 && y <= 525) {
+      if (x > 740 && y >= 505 && y <= 525) { // going through doorway
+      // position in new doorframe
         x = 180;
         y = 575;
         scene = 2; // HALL
@@ -353,7 +365,8 @@ void changescene() {
   
   else if (scene == 6) { // BOSS
     if (direction == 4) { // DOWN 
-      if (y > 860 && x <= 520 && x >= 480) { 
+      if (y > 860 && x <= 520 && x >= 480) { // going through doorway
+      // position in new doorframe
         y = 245;
         scene = 2; // HALL
       }
